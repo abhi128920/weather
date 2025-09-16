@@ -1,35 +1,44 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import React, { useState } from "react";
 
-function App() {
-  const [count, setCount] = useState(0)
+const App = () => {
+  const [city, setCity] = useState("");
+  const [weather, setWeather] = useState(null);
+  const apiKey = "YOUR_API_KEY"; // replace with your OpenWeatherMap API key
+
+ const getWeather = async () => {
+  if (!city) return;
+  try {
+    const response = await fetch(
+      `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}&units=metric`
+    );
+    const data = await response.json();
+    console.log("API Response:", data); // 🔍 Debug log
+    setWeather(data);
+  } catch (error) {
+    console.error("Error fetching weather:", error);
+  }
+};
 
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
-}
+    <div style={{ textAlign: "center", marginTop: "50px" }}>
+      <h1>🌤 Weather App</h1>
+      <input
+        type="text"
+        placeholder="Enter city"
+        value={city}
+        onChange={(e) => setCity(e.target.value)}
+      />
+      <button onClick={getWeather}>Get Weather</button>
 
-export default App
+      {weather && weather.main && (
+        <div>
+          <h2>{weather.name}</h2>
+          <p>🌡 {weather.main.temp}°C</p>
+          <p>☁ {weather.weather[0].description}</p>
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default App;
